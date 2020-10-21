@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">InciApp</string>
+    <!-- settings -->
+    <string name="settings">Configuración</string>
+    <!-- activity main -->
+    <string name="correo_log">Correo</string>
+    <string name="contra_log">Contraseña</string>
+    <string name="login">Login</string>
+    <string name="registrar_log">Registrarse</string>
+    <string name="servidor_no">Debe conectarse a un servidor previamente</string>
+    <string name="log_no">Correo o contraseña incorrecta</string>
+    <!-- pop up -->
+    <string name="ip_popup">IP :</string>
+    <string name="port_popup">Puerto :</string>
+    <string name="encabezado_popup">Localización Servidor</string>
+    <string name="boton_popup">Aceptar</string>
+    <string name="ok_servidor">Conectado al servidor.</string>
+    <string name="fail_servidor">No se ha podido establecer conexión con el servidor.</string>
+    <string name="error_popup">Introduzca todos los datos.</string>
+</resources>
