@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean conectadoServidor = false;
 
     private Socket socket;
-    protected InputStream input;
+    protected InputStream leerServidor;
     protected OutputStream enviarServidor;
 
     protected MyApplication app;
@@ -92,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
         //con esta variable sabremos si ya habiamos iniciado sesion en este dispositivo
         //con el usuario y contraseña introducidos previamente
         sesionIniciada = preferences.getString("sesion.iniciada", "");
+        //si no obtenemos ningun resultado de nuestro archivo de propiedades, significada que es la primera vez que abrimos la app en el dispositivo
+        //por lo que la variable sesionIniciada sera igual a false
+        if(sesionIniciada.length()<1)
+            sesionIniciada="false";
+
 
         Button boton_log = (Button) findViewById(R.id.boton_loggin);
         boton_log.setOnClickListener(new View.OnClickListener() {
@@ -116,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                     text_correo.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorSecond));
                     text_correo.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary));
 
-                    //Intent intent = new Intent(v.getContext(), RegistrarUsuario.class);
-                    //startActivity(intent);
+                    Intent intent = new Intent(v.getContext(), RegistrarUsuario.class);
+                    startActivity(intent);
                 }else{
                     Toast.makeText(getApplication(),getApplication().getString(R.string.servidor_no),Toast.LENGTH_LONG).show();
                 }
@@ -276,10 +280,10 @@ public class MainActivity extends AppCompatActivity {
                 socket.connect(servidorAddr, timeout);
                 Log.i("I/TCP Client", "Connected to server");
 
-                input = socket.getInputStream();
+                leerServidor = socket.getInputStream();
                 byte[] resServidor = new byte[1024];
                 enviarServidor = socket.getOutputStream();
-                input.read(resServidor);
+                leerServidor.read(resServidor);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -343,8 +347,10 @@ public class MainActivity extends AppCompatActivity {
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
                 //respuestaServidor = leerServidor.readLine();
-                byte[] respuestaSer = new byte[input.available()];
-                input.read(respuestaSer);
+                //esperamos a recibir la respuesta del servidor
+                while(leerServidor.available()<1){}
+                byte[] respuestaSer = new byte[leerServidor.available()];
+                leerServidor.read(respuestaSer);
                 respuestaServidor = new String(respuestaSer);
                 resServidor = respuestaServidor.split("\\|\\|");
 
@@ -390,9 +396,9 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("tipo_usuario", tipoUsuario);
                     startActivity(intent);
                 }   */
-                //Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
-                //intent.putExtra("tipo_usuario", tipoUsuario);
-                //startActivity(intent);
+                Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
+                intent.putExtra("tipo_usuario", tipoUsuario);
+                startActivity(intent);
             }else{
                 Toast.makeText(getApplication(),getApplication().getString(R.string.log_no),Toast.LENGTH_LONG).show();
             }

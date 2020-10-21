@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSecond"
+    android:padding="20dp"
+    >
+
+    <ImageView
+        android:id="@+id/imagen_registrar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_log"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        />
+
+
+    <EditText
+        android:id="@+id/correo_text_reg"
+        android:layout_width="250dip"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:padding="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textAlignment="center"
+        android:hint="@string/correo_log"
+        android:layout_gravity="center"
+        android:inputType="textEmailAddress"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
+
+
+        <EditText
+            android:id="@+id/contra_text_reg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/contra_log"
+            android:layout_marginRight="5dp"
+            android:inputType="textPassword"
+            />
+
+        <EditText
+            android:id="@+id/repcontra_text_reg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/repcontra_reg"
+            android:inputType="textPassword"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
+
+
+        <EditText
+            android:id="@+id/nombre_text_reg"
+            android:layout_width="155dip"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/nombre_reg"
+            />
+
+        <EditText
+            android:id="@+id/apellidos_text_reg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/apellidos_reg"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
+
+
+        <EditText
+            android:id="@+id/dni_text_reg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/dni_reg"
+            android:layout_gravity="center"
+            android:maxLength="9"
+            />
+
+
+        <EditText
+            android:id="@+id/tlf_text_reg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:padding="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:hint="@string/tlf_reg"
+            android:layout_gravity="center"
+            android:inputType="phone"
+            android:maxLength="9"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp">
+
+        <ProgressBar
+            android:id="@+id/progressbar_reg"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:progressDrawable="@drawable/progressbar_style"
+            />
+
+        <Button
+            android:id="@+id/boton_acept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/boton_popup"
+            android:textColor="@color/colorSecond"
+            android:background="@color/colorPrimary"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

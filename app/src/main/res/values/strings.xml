@@ -17,4 +17,17 @@
     <string name="ok_servidor">Conectado al servidor.</string>
     <string name="fail_servidor">No se ha podido establecer conexión con el servidor.</string>
     <string name="error_popup">Introduzca todos los datos.</string>
+    <!-- registrar usuario -->
+    <string name="repcontra_reg">Rep Contraseña</string>
+    <string name="nombre_reg">Nombre</string>
+    <string name="apellidos_reg">Apellidos</string>
+    <string name="dni_reg">DNI</string>
+    <string name="tlf_reg">Tlf</string>
+    <string name="registrar_reg">Registrarme</string>
+    <string name="regis_ok">Se ha registrado correctamente.</string>
+    <string name="regis_no">Ya existe un usuario con ese correo.</string>
+    <!-- layout ciudadano -->
+    <string name="boton_incidencia">Nueva Incidencia</string>
+    <string name="boton_seguimiento_inci">Incidencias Activas</string>
+    <string name="boton_historial_inci">Historial Incidencias</string>
 </resources>
