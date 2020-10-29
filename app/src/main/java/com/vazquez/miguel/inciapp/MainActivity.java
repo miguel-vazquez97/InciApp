@@ -35,10 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private static String puerto = null;
     private static boolean conectadoServidor = false;
 
-    private Socket socket;
-    protected InputStream leerServidor;
-    protected OutputStream enviarServidor;
-
     protected MyApplication app;
     protected SharedPreferences preferences;
     protected SharedPreferences.Editor editor;
@@ -271,26 +267,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            //limitaremos a 4s de espera para conectarse al servidor
-            int timeout = 4000;
-            try {
-                InetSocketAddress servidorAddr = new InetSocketAddress(direccion_ip, Integer.parseInt(puerto));
-                Log.i("I/TCP Client", "Connecting...");
-                socket = new Socket();
-                socket.connect(servidorAddr, timeout);
-                Log.i("I/TCP Client", "Connected to server");
 
-                leerServidor = socket.getInputStream();
-                byte[] resServidor = new byte[1024];
-                enviarServidor = socket.getOutputStream();
-                leerServidor.read(resServidor);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-
-            return true;
+            return app.conectarConServidor(direccion_ip, Integer.parseInt(puerto));
 
         }
 
@@ -302,7 +280,6 @@ public class MainActivity extends AppCompatActivity {
             }
             if(value){
                 dialog.dismiss();
-                app.setSocket(socket);
                 conectadoServidor = true;
                 Toast.makeText(getApplication(),getApplication().getString(R.string.ok_servidor),Toast.LENGTH_LONG).show();
             }else{
@@ -319,6 +296,9 @@ public class MainActivity extends AppCompatActivity {
         ProgressBar progressBar;
         Button boton_log;
 
+        OutputStream enviarServidor;
+        InputStream leerServidor;
+
         String envioServidor;
         String respuestaServidor;
         String[] resServidor;
@@ -333,6 +313,14 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             boton_log = findViewById(R.id.boton_loggin);
             boton_log.setVisibility(View.GONE);
+
+            try {
+                enviarServidor = app.getSocket().getOutputStream();
+                leerServidor = app.getSocket().getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             respuesta = "";
         }

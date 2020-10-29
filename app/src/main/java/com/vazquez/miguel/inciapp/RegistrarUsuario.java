@@ -225,9 +225,6 @@ public class RegistrarUsuario extends AppCompatActivity {
                     return true;
                 }
 
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-                return false;
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

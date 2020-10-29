@@ -11,43 +11,43 @@
 
     <Button
         android:id="@+id/boton_nueva_incidencia"
-        android:layout_width="wrap_content"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:padding="18dp"
         android:layout_marginTop="40dp"
         android:text="@string/boton_incidencia"
         android:textAlignment="center"
         android:background="@color/colorPrimary"
         android:textColor="@color/colorSecond"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:layout_gravity="center"
         android:visibility="visible"/>
 
     <Button
         android:id="@+id/boton_activas"
-        android:layout_width="wrap_content"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:padding="18dp"
         android:layout_marginTop="20dp"
         android:text="@string/boton_seguimiento_inci"
         android:textAlignment="center"
         android:background="@color/colorPrimary"
         android:textColor="@color/colorSecond"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:layout_gravity="center"
         android:visibility="visible"/>
 
     <Button
         android:id="@+id/boton_historial"
-        android:layout_width="wrap_content"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:padding="17dp"
         android:layout_marginTop="20dp"
         android:text="@string/boton_historial_inci"
         android:textAlignment="center"
         android:background="@color/colorPrimary"
         android:textColor="@color/colorSecond"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:layout_gravity="center"
         android:visibility="visible"/>
 
