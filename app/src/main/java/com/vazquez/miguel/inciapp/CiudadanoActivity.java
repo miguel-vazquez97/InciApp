@@ -54,7 +54,10 @@ public class CiudadanoActivity extends AppCompatActivity {
         boton_inciActivas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getApplication(), ListadoIncidencias.class);
+                intent.putExtra("tipo_incidencia", "incidencias_activas");
+                intent.putExtra("tipo_usuario", tipoUsuario);
+                startActivity(intent);
             }
         });
 
@@ -62,7 +65,10 @@ public class CiudadanoActivity extends AppCompatActivity {
         boton_historialInci.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getApplication(), ListadoIncidencias.class);
+                intent.putExtra("tipo_incidencia", "incidencias_historial");
+                intent.putExtra("tipo_usuario", tipoUsuario);
+                startActivity(intent);
             }
         });
 

@@ -52,6 +52,16 @@
     <string name="incidenciaDenegada">Error. No se ha podido registrar la incidencia.</string>
     <string name="errorImagen">Error al enviar imagen.</string>
     <string name="imagen_description">Imagen incidencia</string>
+    <!-- DetallesIncidencia -->
+    <string name="NuevaRegistrada">Registro Incidencia</string>
+    <string name="EnTramite">En Tramite</string>
+    <string name="Validada">Validada</string>
+    <string name="EnArreglo">En Arreglo</string>
+    <string name="ValidarArreglo">Validar Arreglo</string>
+    <string name="Arreglada">Arreglada</string>
+    <string name="Solucionada">Solucionada</string>
+    <string name="Denegada">Denegada</string>
+    <string name="DetalleIncidencia">Detalles Incidencia</string>
 
 
     <string name="mensaje_cerrar_app">¿Desea salir de la aplicación?</string>

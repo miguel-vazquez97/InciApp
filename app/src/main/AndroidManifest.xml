@@ -45,6 +45,9 @@
         <activity android:name=".RegistrarUsuario" />
         <activity android:name=".CiudadanoActivity" />
         <activity android:name=".NuevaIncidencia" />
+        <activity android:name=".ListadoIncidencias" />
+        <activity android:name=".DetallesIncidencia" />
+
     </application>
 
 </manifest>
