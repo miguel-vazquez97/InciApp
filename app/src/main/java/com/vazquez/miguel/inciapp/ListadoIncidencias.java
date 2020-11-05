@@ -52,6 +52,9 @@ public class ListadoIncidencias extends AppCompatActivity {
             case "incidencias_activas":
                 getSupportActionBar().setTitle("Incidencias Activas");
                 break;
+            case "incidencias_enTramite":
+                getSupportActionBar().setTitle("Incidencias en Tramite");
+                break;
         }
 
         app = (MyApplication) getApplication();
@@ -92,12 +95,21 @@ public class ListadoIncidencias extends AppCompatActivity {
         @Override
         protected ArrayList<IncidenciaRow> doInBackground(Void... voids) {
 
-            if (tipoUsuario == 4) {
-                if (tipo_incidencia.equals("incidencias_historial")) {
-                    envioServidor = "54||" + app.getCorreo() + "||historial||";
-                } else {
-                    envioServidor = "55||" + app.getCorreo() + "||activas||";
-                }
+            switch(tipoUsuario){
+
+                case 2:
+                    if(tipo_incidencia.equals("incidencias_enTramite")){
+                        envioServidor = "56||"+app.getCorreo()+"||enTramite||";
+                    }
+                    break;
+
+                case 4:
+                    if(tipo_incidencia.equals("incidencias_historial")){
+                        envioServidor = "54||"+app.getCorreo()+"||historial||";
+                    }else{
+                        envioServidor = "55||"+app.getCorreo()+"||activas||";
+                    }
+                    break;
             }
 
 
@@ -142,16 +154,25 @@ public class ListadoIncidencias extends AppCompatActivity {
                 @Override
                 public void onItemClick(IncidenciaRow incidencia, int position) {
                     switch(tipoUsuario){
+                        case 2:
+                            Intent intent2 = new Intent (getApplication(), SupervisorIncidencia.class);
+                            intent2.putExtra("id_incidencia", incidencia.getId());
+                            intent2.putExtra("tipo_usuario", tipoUsuario);
+                            if(tipo_incidencia.equals("incidencias_enTramite")){
+                                intent2.putExtra("tipo_estado","enTramite");
+                            }
+                            startActivity(intent2);
+                            finish();
+                            break;
+
+                        case 3:
+
+                            break;
+
                         case 4:
                             Intent intent = new Intent(getApplication(), DetallesIncidencia.class);
                             intent.putExtra("id_incidencia", incidencia.getId());
                             startActivity(intent);
-                            break;
-                        case 2:
-
-                            break;
-                        case 3:
-
                             break;
                     }
 

@@ -34,7 +34,7 @@
     <string name="boton_historial_inci">Historial Incidencias</string>
     <!-- layout incidencia nueva -->
     <string name="boton_ubicacion">Obtener ubicación</string>
-    <string name="descripcion_text">Descripción de la incidencia...</string>
+    <string name="descripcion_text">Descripción de la incidencia…</string>
     <string name="boton_foto">Tomar foto</string>
     <string name="tipo_text">Tipo de incidencia:</string>
     <string name="boton_reg_incidencia">Registrar incidencia</string>
@@ -57,13 +57,36 @@
     <string name="EnTramite">En Tramite</string>
     <string name="Validada">Validada</string>
     <string name="EnArreglo">En Arreglo</string>
-    <string name="ValidarArreglo">Validar Arreglo</string>
     <string name="Arreglada">Arreglada</string>
     <string name="Solucionada">Solucionada</string>
     <string name="Denegada">Denegada</string>
     <string name="DetalleIncidencia">Detalles Incidencia</string>
+    <!-- select rol -->
+    <string name="ciudadano_rol">CIUDADANO</string>
+    <string name="supervisor_rol">SUPERVISOR</string>
+    <string name="empleado_rol">EMPLEADO</string>
+    <!-- layout_supervisor -->
+    <string name="boton_enTramite">Incidencia en Tramite</string>
+    <string name="boton_validarArreglo">Validar Arreglo Incidencia</string>
+    <!-- layout_supervisor_incidencia -->
+    <string name="boton_enTramite_validar">VALIDAR</string>
+    <string name="boton_enTramite_denegar">DENEGAR</string>
+    <string name="boton_enTramite_ubicacion">IR A UBICACIÓN</string>
+    <string name="title_activity_maps">Map</string>
+    <!-- SupervisorIncidencia -->
+    <string name="validar_incidencia">¿Está seguro de validar la incidencia?</string>
+    <string name="denegar_incidencia">¿Está seguro de denegar la incidencia?</string>
+    <string name="validar_incidencia_ok">Incidencia validada.</string>
+    <string name="denegar_incidencia_ok">Incidencia denegada.</string>
+    <!-- pop up denegar supervisor incidencia -->
+    <string name="titulo_denegarpopup">Escriba el motivo de la denegación.</string>
+    <string name="error_denegarpopup">Introduzca el mótivo.</string>
+    <!-- activity_maps -->
+    <string name="boton_normal">Normal</string>
+    <string name="boton_hibrido">Híbrido</string>
 
 
+    <string name="mensaje_error">Se ha producido un error</string>
     <string name="mensaje_cerrar_app">¿Desea salir de la aplicación?</string>
 
 </resources>

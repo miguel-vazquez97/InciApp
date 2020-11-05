@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //si el usuario tiene rol = 2(supervisor) o rol = 3(empleador)
                 //podremos elegir entrar a la app como supervisor/empleado o ciudadano
-                /*
+
                 if(tipoUsuario==2 || tipoUsuario==3) {
                     Intent intent = new Intent(getApplication(), SelectRol.class);
                     intent.putExtra("tipo_usuario", tipoUsuario);
@@ -383,10 +383,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
                     intent.putExtra("tipo_usuario", tipoUsuario);
                     startActivity(intent);
-                }   */
-                Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
-                intent.putExtra("tipo_usuario", tipoUsuario);
-                startActivity(intent);
+                }
+
             }else{
                 Toast.makeText(getApplication(),getApplication().getString(R.string.log_no),Toast.LENGTH_LONG).show();
             }

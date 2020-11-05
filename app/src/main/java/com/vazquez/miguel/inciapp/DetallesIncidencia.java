@@ -159,10 +159,10 @@ public class DetallesIncidencia extends AppCompatActivity {
         protected void onPostExecute(ArrayList<IncidenciaDetalle> arrayIncidencias) {
             progressBar.setVisibility(View.GONE);
 
-            LinearLayout linear_NR, linear_ET, linear_EA, linear_S, linear_D;
-            TextView estado_NR, tipo_NR, fecha_NR, descripcion_NR, estado_ET, fecha_ET, estado_EA, fecha_EA, estado_S, fecha_S, descripcion_S, estado_D, fecha_D, descripcion_D;
+            LinearLayout linear_NR, linear_ET, linear_V, linear_EA, linear_A, linear_S, linear_D;
+            TextView estado_NR, tipo_NR, fecha_NR, descripcion_NR, estado_ET, fecha_ET, estado_V, fecha_V, estado_EA, fecha_EA, estado_A, fecha_A, estado_S, fecha_S, descripcion_S, estado_D, fecha_D, descripcion_D;
             ImageView imagen_NR, imagen_S;
-            View separador_NR, separador_ET, separador_EA;
+            View separador_NR, separador_ET, separador_V, separador_EA, separador_A;
             for(IncidenciaDetalle incidencia : arrayIncidencias){
                 switch(incidencia.getEstado()){
                     case "NuevaRegistrada":
@@ -186,17 +186,27 @@ public class DetallesIncidencia extends AppCompatActivity {
 
                         linear_ET = findViewById(R.id.linear_en_tramite);
                         linear_ET.setVisibility(View.VISIBLE);
-                        linear_ET = findViewById(R.id.linear_en_tramite);
-                        linear_ET.setVisibility(View.VISIBLE);
                         estado_ET = findViewById(R.id.estadoET);
                         estado_ET.setText(getResources().getString(R.string.EnTramite));
                         fecha_ET = findViewById(R.id.fechaET);
                         fecha_ET.setText(incidencia.getDate().toString());
                         break;
 
-                    case "EnArreglo":
+                    case "Validada":
                         separador_ET = findViewById(R.id.separadorET);
                         separador_ET.setVisibility(View.VISIBLE);
+
+                        linear_V = findViewById(R.id.linear_validada);
+                        linear_V.setVisibility(View.VISIBLE);
+                        estado_V = findViewById(R.id.estadoV);
+                        estado_V.setText(getResources().getString(R.string.Validada));
+                        fecha_V = findViewById(R.id.fechaV);
+                        fecha_V.setText(incidencia.getDate().toString());
+                        break;
+
+                    case "EnArreglo":
+                        separador_V = findViewById(R.id.separadorV);
+                        separador_V.setVisibility(View.VISIBLE);
 
                         linear_EA = findViewById(R.id.linear_en_arreglo);
                         linear_EA.setVisibility(View.VISIBLE);
@@ -206,9 +216,21 @@ public class DetallesIncidencia extends AppCompatActivity {
                         fecha_EA.setText(incidencia.getDate().toString());
                         break;
 
-                    case "Solucionada":
+                    case "Arreglada":
                         separador_EA = findViewById(R.id.separadorEA);
                         separador_EA.setVisibility(View.VISIBLE);
+
+                        linear_A = findViewById(R.id.linear_arreglada);
+                        linear_A.setVisibility(View.VISIBLE);
+                        estado_A = findViewById(R.id.estadoA);
+                        estado_A.setText(getResources().getString(R.string.Arreglada));
+                        fecha_A = findViewById(R.id.fechaA);
+                        fecha_A.setText(incidencia.getDate().toString());
+                        break;
+
+                    case "Solucionada":
+                        separador_A = findViewById(R.id.separadorA);
+                        separador_A.setVisibility(View.VISIBLE);
 
                         linear_S = findViewById(R.id.linear_solucionada);
                         linear_S.setVisibility(View.VISIBLE);

@@ -28,7 +28,7 @@
                     android:id="@+id/estadoNR"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="#000000"/>
 
@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
 
                     <TextView
@@ -54,7 +54,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
                 </LinearLayout>
 
@@ -65,7 +65,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     android:textColor="#000000"/>
 
                 <ImageView
@@ -90,7 +90,6 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_nueva_registrada"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -103,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#000000"/>
                     <TextView
@@ -112,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
                 </LinearLayout>
 
@@ -128,11 +127,51 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linear_validada"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/estadoV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"/>
+                    <TextView
+                        android:id="@+id/fechaV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textSize="14sp"
+                        android:textColor="#000000"/>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/separadorV"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@android:color/darker_gray"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linear_en_arreglo"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_en_tramite"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -145,7 +184,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#000000"/>
                     <TextView
@@ -154,7 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
                 </LinearLayout>
 
@@ -170,11 +209,51 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linear_arreglada"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/estadoA"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"/>
+                    <TextView
+                        android:id="@+id/fechaA"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textSize="14sp"
+                        android:textColor="#000000"/>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/separadorA"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@android:color/darker_gray"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linear_solucionada"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_en_tramite"
                 android:visibility="gone">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -187,7 +266,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#000000"/>
                     <TextView
@@ -196,7 +275,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
                 </LinearLayout>
 
@@ -207,7 +286,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     android:textColor="#000000"/>
 
                 <ImageView
@@ -224,7 +303,6 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_nueva_registrada"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -237,7 +315,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#000000"/>
                     <TextView
@@ -246,7 +324,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:textSize="14dp"
+                        android:textSize="14sp"
                         android:textColor="#000000"/>
                 </LinearLayout>
                 <TextView
@@ -256,7 +334,7 @@
                     android:layout_marginTop="30dp"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     android:textColor="#000000"/>
             </LinearLayout>
         </LinearLayout>
