@@ -54,6 +54,7 @@
             android:textSize="18sp"
             android:textColor="@color/colorPrimary"
             android:hint="@string/descripcion_text"
+            android:textColorHint="@color/colorPrimary"
             android:layout_marginTop="25dp" />
 
 
@@ -94,11 +95,6 @@
             android:layout_marginBottom="5dp"
             android:background="@color/colorPrimary"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
             <Button
                 android:id="@+id/boton_foto"
                 android:layout_width="100dp"
@@ -109,17 +105,16 @@
                 android:background="#7BA4A8"
                 android:padding="10dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginEnd="40dp"
                 android:layout_marginBottom="15dp"/>
 
             <ImageView
                 android:id="@+id/imagen_view"
-                android:layout_width="wrap_content"
-                android:layout_height="300dp"
+                android:layout_width="400dp"
+                android:layout_height="500dp"
                 android:layout_gravity="center"
-                android:contentDescription="@string/imagen_description" />
+                android:contentDescription="@string/imagen_description"
+                android:visibility="gone"/>
 
-        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="wrap_content"

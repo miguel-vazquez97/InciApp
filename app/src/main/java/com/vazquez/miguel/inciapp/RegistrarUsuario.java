@@ -194,9 +194,9 @@ public class RegistrarUsuario extends AppCompatActivity {
 
         ProgressBar progressBar;
         Button boton_aceptar;
-        String envioServidor;
-        String respuestaServidor;
+        String envioServidor, respuestaServidor;
         String[] resServidor;
+        byte[] respuestaSer;
 
         @Override
         protected void onPreExecute(){
@@ -212,10 +212,29 @@ public class RegistrarUsuario extends AppCompatActivity {
             envioServidor = "51||"+strings[0]+"||"+strings[1]+"||"+strings[2]+"||"+strings[3]+"||"+strings[4]+"||"+strings[5]+"||";
 
             try{
+                while(leerServidor.available()>0){
+                    leerServidor.read(respuestaSer = new byte[leerServidor.available()]);
+                }
+
                 byte[] envioSer = envioServidor.getBytes();
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
-                byte[] respuestaSer = new byte[1024];
+
+                int time=0;
+                while(leerServidor.available()<1 && time<4000){
+                    try {
+                        Thread.sleep(500);
+                        time += 500;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(time==4000){
+                    return null;
+                }
+
+                respuestaSer = new byte[leerServidor.available()];
                 leerServidor.read(respuestaSer);
                 respuestaServidor = new String(respuestaSer);
 
@@ -238,6 +257,11 @@ public class RegistrarUsuario extends AppCompatActivity {
         protected void onPostExecute(Boolean value){
             progressBar.setVisibility(View.GONE);
             boton_aceptar.setVisibility(View.VISIBLE);
+
+            if(value==null){
+                Toast.makeText(getApplication(), getApplication().getString(R.string.mensaje_error_conection_server), Toast.LENGTH_LONG).show();
+                return;
+            }
 
             if(!value){
                 Toast.makeText(getApplication(),getApplication().getString(R.string.regis_no),Toast.LENGTH_LONG).show();

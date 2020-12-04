@@ -1,6 +1,8 @@
 package com.vazquez.miguel.inciapp;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.IOException;
@@ -8,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class MyApplication extends Application {
 
@@ -59,8 +60,10 @@ public class MyApplication extends Application {
             InputStream leerServidor = socket.getInputStream();
             byte[] resServidor = new byte[1024];
             leerServidor.read(resServidor);
-
             setSocket(socket);
+            OutputStream escribirServidor = socket.getOutputStream();
+            escribirServidor.write("ConectadoAppMovil||1||".getBytes());
+            escribirServidor.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,6 +71,60 @@ public class MyApplication extends Application {
         }
 
         return true;
+    }
+
+    public boolean logOut(){
+        boolean respuesta = false;
+        byte[] respuestaSer;
+
+        try {
+            InputStream recibirServidor = socket.getInputStream();
+            OutputStream enviarServidor = socket.getOutputStream();
+
+            if(recibirServidor.available()>0){
+                recibirServidor.read(respuestaSer = new byte[recibirServidor.available()]);
+            }
+
+            byte[] envioSer = "65||logOutUsuario||".getBytes();
+            enviarServidor.write(envioSer);
+            enviarServidor.flush();
+
+            while(recibirServidor.available()<1){}
+
+            respuestaSer = new byte[recibirServidor.available()];
+            recibirServidor.read(respuestaSer);
+            String respuestaServidor = new String(respuestaSer);
+            String[] resServidor = respuestaServidor.split("\\|\\|");
+
+            if(resServidor[0].equals("72") && resServidor[1].equals("logOutOk")){
+                respuesta=true;
+
+                SharedPreferences preferences = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("sesion.iniciada","false");
+                editor.apply();
+
+                cerrarSesion();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            cerrarSesion();
+            return false;
+        }
+
+        return respuesta;
+    }
+
+    public void cerrarSesion(){
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        conectadoServidor=false;
+
     }
 
 }

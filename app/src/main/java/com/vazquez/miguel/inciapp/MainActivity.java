@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static String direccion_ip = null;
     private static String puerto = null;
-    private static boolean conectadoServidor = false;
+    private static boolean conectadoServidor;
 
     protected MyApplication app;
     protected SharedPreferences preferences;
@@ -56,7 +56,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
 
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            System.exit(0);
+        }
+
         app = (MyApplication)getApplication();
+        conectadoServidor = app.getConectadoServidor();
 
         //accedemos al archivo de propiedades
         preferences = getSharedPreferences("propiedades", Context.MODE_PRIVATE);
@@ -281,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             if(value){
                 dialog.dismiss();
                 conectadoServidor = true;
-                Toast.makeText(getApplication(),getApplication().getString(R.string.ok_servidor),Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplication(),getApplication().getString(R.string.ok_servidor),Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getApplication(),getApplication().getString(R.string.fail_servidor),Toast.LENGTH_LONG).show();
                 //si el dialog abierto no es el popup, si no el dialog que aparece cuando iniciamos la app, haremos dismiss() para dejar de mostrarlo
@@ -382,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
                     intent.putExtra("tipo_usuario", tipoUsuario);
+                    intent.putExtra("rolUnico",true);
                     startActivity(intent);
                 }
 

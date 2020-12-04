@@ -55,10 +55,11 @@ import java.util.Locale;
 
 public class NuevaIncidencia extends AppCompatActivity {
 
-    private static final String DIRECTORIO_IMAGEN = "/inciApp/imagenes/";
+    //private static final String DIRECTORIO_IMAGEN = "/inciApp/imagenes/";
     private static final int COD_FOTO = 20;
     private String path;
 
+    protected Socket socket;
     protected InputStream leerServidor;
     protected OutputStream enviarServidor;
     protected DataInputStream inputStream;
@@ -80,7 +81,6 @@ public class NuevaIncidencia extends AppCompatActivity {
     AlertDialog alertDialog;
     String tipo_inci;
     String descrip_inci;
-    Bitmap bImage;
 
     private FusedLocationProviderClient client;
 
@@ -91,7 +91,7 @@ public class NuevaIncidencia extends AppCompatActivity {
         setContentView(R.layout.layout_nueva_incidencia);
 
         app = (MyApplication) getApplication();
-        Socket socket = app.getSocket();
+        socket = app.getSocket();
 
         try {
             enviarServidor = socket.getOutputStream();
@@ -192,14 +192,18 @@ public class NuevaIncidencia extends AppCompatActivity {
 
         long consecutivo = System.currentTimeMillis() / 1000;
         String pictureFile = Long.toString(consecutivo);
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES+DIRECTORIO_IMAGEN);
+        //File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES+DIRECTORIO_IMAGEN);
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = null;
         try {
             image = File.createTempFile(pictureFile, ".jpg", storageDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        path = image.getAbsolutePath();
+
+        if (image != null) {
+            path = image.getAbsolutePath();
+        }
 
         return image;
     }
@@ -212,15 +216,10 @@ public class NuevaIncidencia extends AppCompatActivity {
             File imgFile = new File(path);
             if(imgFile.exists()){
                 imagenView.setImageURI(Uri.fromFile(imgFile));
-
-                try {
-                    InputStream imageStream = this.getContentResolver().openInputStream(Uri.fromFile(imgFile));
-                    bImage = BitmapFactory.decodeStream(imageStream);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                imagenView.setVisibility(View.VISIBLE);
             }
         }
+
 
     }
 
@@ -232,7 +231,7 @@ public class NuevaIncidencia extends AppCompatActivity {
 
     private void showAlert() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("¡Ubicación desactivada!")
+        dialog.setTitle("Ubicación desactivada")
                 .setMessage("Su ubicación esta desactivada.")
                 .setPositiveButton("Configuración de ubicación", new DialogInterface.OnClickListener() {
                     @Override
@@ -330,11 +329,10 @@ public class NuevaIncidencia extends AppCompatActivity {
         String envioServidor;
         String respuestaServidor;
         String[] resServidor;
-        byte[] envioSer;
+        byte[] envioSer, respuestaSer;
 
         @Override
         protected void onPreExecute(){
-            super.onPreExecute();
             progressBar = findViewById(R.id.progressbar_registrar_incidencia);
             progressBar.setVisibility(View.VISIBLE);
             boton_reg = findViewById(R.id.boton_registrar_incidencia);
@@ -347,38 +345,60 @@ public class NuevaIncidencia extends AppCompatActivity {
             envioServidor = "53||comenzar_registro||"+file.length()+"||"+file.getName()+"||";
 
             try{
+                while(leerServidor.available()>0){
+                    leerServidor.read(respuestaSer = new byte[leerServidor.available()]);
+                }
+
                 //nos comunicamos con el servidor
                 envioSer = envioServidor.getBytes();
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
 
-                respuestaServidor = inputStream.readUTF();
-                if(respuestaServidor.equals("EnviarImagen")) {
-                    //Enviamos la imagen mediante otro hilo
-                    EnviarImagen enviarImagen = new EnviarImagen(file);
-                    enviarImagen.start();
-                    enviarImagen.join();
+                //entramos en el while
+                while(true){
+                    int time=0;
+                    //esperamos a recibir la comunicación con el server
+                    while(leerServidor.available()<1 && time<4000){
+                        try {
+                            Thread.sleep(500);
+                            time += 500;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if(time==4000){
+                        return null;
+                    }
+                    //leeremos lo que nos haya enviado el server
+                    respuestaServidor = inputStream.readUTF();
+                    //dependiendo de lo que nos haya perdido el server
+                    //le enviaremos la imagen o los datos
+                    switch(respuestaServidor){
+                        case "70||esperandoImagenNuevaRegistrada||":
+                            //Enviamos la imagen mediante otro hilo
+                            EnviarImagen enviarImagen = new EnviarImagen(file);
+                            enviarImagen.start();
+                            enviarImagen.join();
+                            break;
+
+                        case "71||enviarDatosNuevaRegistrada||":
+                            String datosIncidencia = latitudeGPS+";"+longitudeGPS+"||"+direccion+"||"+descrip_inci+"||"+tipo_inci+"||"+app.getCorreo()+"||";
+                            outputStream.writeUTF(datosIncidencia);
+                            break;
+
+                        //si todo ha ido correctamente a la hora de enviar los datos o ha habido algún error
+                        //saldremos del switch y del while para informar al usuario
+                        default:
+                            return null;
+                    }
+
                 }
 
-                respuestaServidor = inputStream.readUTF();
 
-                if(respuestaServidor.equals("EnviarDatosIncidencia")){
-                    String datosIncidencia = latitudeGPS+";"+longitudeGPS+"||"+direccion+"||"+descrip_inci+"||"+tipo_inci+"||"+app.getCorreo()+"||";
-                    outputStream.writeUTF(datosIncidencia);
-
-                    while(leerServidor.available()<1){}
-
-                    byte[] respuestaSer = new byte[leerServidor.available()];
-                    leerServidor.read(respuestaSer);
-                    respuestaServidor = new String(respuestaSer);
-
-                }else{
-                    respuestaServidor = "errorImagen";
-                }
 
             } catch (IOException e) {
+                cancel(true);
                 e.printStackTrace();
-                return false;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -392,24 +412,38 @@ public class NuevaIncidencia extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             boton_reg.setVisibility(View.VISIBLE);
 
-            if(respuestaServidor.equals("errorImagen")){
-                Toast.makeText(getApplication(),getApplication().getString(R.string.errorImagen),Toast.LENGTH_LONG).show();
-            }else{
-                resServidor = respuestaServidor.split("\\|\\|");
-                switch (resServidor[1]){
-                    case "incidenciaOk":
-                        Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaOk),Toast.LENGTH_LONG).show();
-                        finish();
-                        break;
-                    case "incidenciaYaRegistrada":
-                        Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaYaRegistrada),Toast.LENGTH_LONG).show();
-                        break;
-                    case "incidenciaDenegada":
-                        Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaDenegada),Toast.LENGTH_LONG).show();
-                        break;
-                }
+            if(value==null){
+                Toast.makeText(getApplication(), getApplication().getString(R.string.mensaje_error_conection_server), Toast.LENGTH_LONG).show();
+                return;
             }
 
+            //mostramos el mensaje al usuario dependiendo de la respuesta recibida por parte del server
+            resServidor = respuestaServidor.split("\\|\\|");
+            switch (resServidor[1]){
+                case "incidenciaOk":
+                    Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaOk),Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+                case "incidenciaYaRegistrada":
+                    Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaYaRegistrada),Toast.LENGTH_LONG).show();
+                    break;
+                case "incidenciaDenegada":
+                    Toast.makeText(getApplication(),getApplication().getString(R.string.incidenciaDenegada),Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(getApplication(),getApplication().getString(R.string.errorImagen),Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            app.setCorreo(null);
+            Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(NuevaIncidencia.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 

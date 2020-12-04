@@ -1,23 +1,20 @@
 package com.vazquez.miguel.inciapp;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,8 +29,6 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 public class DetallesIncidencia extends AppCompatActivity {
 
     protected MyApplication app;
@@ -45,6 +40,8 @@ public class DetallesIncidencia extends AppCompatActivity {
     protected DataOutputStream outputStream;
 
     int id_incidencia;
+    protected Button botonUbicacion;
+    double latitud, longitud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,17 +54,17 @@ public class DetallesIncidencia extends AppCompatActivity {
 
 
         app = (MyApplication) getApplication();
-        socket = app.getSocket();
 
-        try {
-            enviarServidor = socket.getOutputStream();
-            leerServidor = socket.getInputStream();
-
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        botonUbicacion = findViewById(R.id.botonUbicacaionNR);
+        botonUbicacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(), MapsActivity.class);
+                intent.putExtra("latitud_ubicacion", latitud);
+                intent.putExtra("longitud_ubicacion", longitud);
+                startActivity(intent);
+            }
+        });
 
         DetalleIncidenciaTask detalleIncidenciaTask = new DetalleIncidenciaTask();
         detalleIncidenciaTask.execute();
@@ -78,11 +75,24 @@ public class DetallesIncidencia extends AppCompatActivity {
 
         ProgressBar progressBar;
         String envioServidor;
-        byte[] envioSer;
+        byte[] envioSer, respuestaSer;
+
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
             progressBar = findViewById(R.id.progressbar_detalle_incidencia);
+
+            socket = app.getSocket();
+
+            try {
+                enviarServidor = socket.getOutputStream();
+                leerServidor = socket.getInputStream();
+
+                inputStream = new DataInputStream(socket.getInputStream());
+                outputStream = new DataOutputStream(socket.getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -90,6 +100,14 @@ public class DetallesIncidencia extends AppCompatActivity {
             envioServidor = "60||" + id_incidencia + "||";
             ArrayList<IncidenciaDetalle> arrayIncidencias = new ArrayList<>();
             try {
+
+                //comprobamos si hemos recibido algun mensaje por parte del server
+                //ya que si enviamos un mensaje y este tarda más de 5s en repondernos informaremos al usuario
+                //de que ha habido problemas de comunicación y no esperaremos a que el server responda
+                while(leerServidor.available()>0){
+                    leerServidor.read(respuestaSer = new byte[leerServidor.available()]);
+                }
+
                 envioSer = envioServidor.getBytes();
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
@@ -97,11 +115,23 @@ public class DetallesIncidencia extends AppCompatActivity {
                 //tamano que tendra nuestra cadena en base64
                 int size = inputStream.readInt();
 
-                while(inputStream.available()<1){}
+                int time=0;
+                while(leerServidor.available()<1 && time<4000){
+                    try {
+                        Thread.sleep(500);
+                        time += 500;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(time==4000){
+                    return null;
+                }
 
                 byte[] arrayBytesBase64;
-                String base64="", cadena;
-                while(base64.length()<size){
+                String base64 = "", cadena;
+                while (base64.length() < size) {
                     arrayBytesBase64 = new byte[inputStream.available()];
                     //recibimos bytes
                     inputStream.read(arrayBytesBase64);
@@ -132,15 +162,15 @@ public class DetallesIncidencia extends AppCompatActivity {
                     amd = fecha.split("-");
                     localDate = LocalDate.of(Integer.parseInt(amd[0]), Integer.parseInt(amd[1]), Integer.parseInt(amd[2]));
 
-                    if(obj.has("imagen")){
-                        if(!obj.getString("imagen").isEmpty()){
+                    if (obj.has("imagen")) {
+                        if (!obj.getString("imagen").isEmpty()) {
                             imagenBase64 = obj.getString("imagen");
                             byteArray = Base64.decode(imagenBase64, Base64.DEFAULT);
                             bmpImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                        }else{
+                        } else {
                             bmpImage = null;
                         }
-                    }else{
+                    } else {
                         bmpImage = null;
                     }
 
@@ -148,8 +178,11 @@ public class DetallesIncidencia extends AppCompatActivity {
                     arrayIncidencias.add(incidenciaDetalle);
                 }
 
-            } catch (JSONException | IOException ex) {
+            }catch (IOException ex) {
+                cancel(true);
                 ex.printStackTrace();
+            }catch(JSONException jsonex){
+                jsonex.printStackTrace();
             }
 
             return arrayIncidencias;
@@ -159,8 +192,13 @@ public class DetallesIncidencia extends AppCompatActivity {
         protected void onPostExecute(ArrayList<IncidenciaDetalle> arrayIncidencias) {
             progressBar.setVisibility(View.GONE);
 
+            if(arrayIncidencias==null){
+                Toast.makeText(getApplication(), getApplication().getString(R.string.mensaje_error_conection_server), Toast.LENGTH_LONG).show();
+                return;
+            }
+
             LinearLayout linear_NR, linear_ET, linear_V, linear_EA, linear_A, linear_S, linear_D;
-            TextView estado_NR, tipo_NR, fecha_NR, descripcion_NR, estado_ET, fecha_ET, estado_V, fecha_V, estado_EA, fecha_EA, estado_A, fecha_A, estado_S, fecha_S, descripcion_S, estado_D, fecha_D, descripcion_D;
+            TextView estado_NR, tipo_NR, fecha_NR, descripcion_NR, direccion_NR, estado_ET, fecha_ET, estado_V, fecha_V, estado_EA, fecha_EA, estado_A, fecha_A, estado_S, fecha_S, descripcion_S, estado_D, fecha_D, descripcion_D;
             ImageView imagen_NR, imagen_S;
             View separador_NR, separador_ET, separador_V, separador_EA, separador_A;
             for(IncidenciaDetalle incidencia : arrayIncidencias){
@@ -178,6 +216,12 @@ public class DetallesIncidencia extends AppCompatActivity {
                         imagen_NR.setImageBitmap(incidencia.getImage());
                         descripcion_NR = findViewById(R.id.descripcionNR);
                         descripcion_NR.setText(incidencia.getDescripcion());
+                        direccion_NR = findViewById(R.id.direccionNR);
+                        direccion_NR.setText(incidencia.getDireccion());
+
+                        String[] lon_lat = incidencia.getUbicacion().split(";");
+                        latitud = Double.parseDouble(lon_lat[0]);
+                        longitud = Double.parseDouble(lon_lat[1]);
                         break;
 
                     case "EnTramite":
@@ -260,6 +304,16 @@ public class DetallesIncidencia extends AppCompatActivity {
 
                 }
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            app.setCorreo(null);
+            Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(DetallesIncidencia.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 

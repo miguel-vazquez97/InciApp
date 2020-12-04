@@ -3,6 +3,7 @@
     <!-- settings -->
     <string name="settings">Configuración</string>
     <string name="settings_logout">Cerrar sesión</string>
+    <string name="settings_modificarUser">Modificar perfil</string>
     <string name="logout_mensaje">Sesión cerrada</string>
     <!-- activity main -->
     <string name="correo_log">Correo</string>
@@ -57,6 +58,7 @@
     <string name="EnTramite">En Tramite</string>
     <string name="Validada">Validada</string>
     <string name="EnArreglo">En Arreglo</string>
+    <string name="ValidarArreglo">Validar Arreglo</string>
     <string name="Arreglada">Arreglada</string>
     <string name="Solucionada">Solucionada</string>
     <string name="Denegada">Denegada</string>
@@ -78,15 +80,29 @@
     <string name="denegar_incidencia">¿Está seguro de denegar la incidencia?</string>
     <string name="validar_incidencia_ok">Incidencia validada.</string>
     <string name="denegar_incidencia_ok">Incidencia denegada.</string>
+    <string name="validar_arreglo_incidencia">¿Está seguro de validar el arreglo de la incidencia?</string>
+    <string name="denegar_arreglo_incidencia">¿Está seguro de denegar el arreglo de la incidencia?</string>
+    <string name="validar_arreglo_incidencia_ok">Arreglo validado.</string>
+    <string name="denegar_arreglo_incidencia_ok">Arreglo denegado.</string>
     <!-- pop up denegar supervisor incidencia -->
     <string name="titulo_denegarpopup">Escriba el motivo de la denegación.</string>
     <string name="error_denegarpopup">Introduzca el mótivo.</string>
     <!-- activity_maps -->
     <string name="boton_normal">Normal</string>
     <string name="boton_hibrido">Híbrido</string>
+    <!-- layout_empleado_incidencia -->
+    <string name="titulo_separator">ARREGLOS</string>
+    <string name="boton_enviar_arreglo">Enviar</string>
+    <string name="descripcion_arreglo_text">Descripción del arreglo.</string>
+    <string name="arreglo_incidencia_ok">Registrado arreglo correctamente.</string>
+    <!-- layout_modificar_usuario -->
+    <string name="departamento_modificar">Dept</string>
+    <string name="boton_modificar">Modificar</string>
+    <!-- ModificarUsuario -->
+    <string name="usuario_modificado">Usuario modificado.</string>
 
-
-    <string name="mensaje_error">Se ha producido un error</string>
+    <string name="mensaje_error_conection_server">Error en la comunicación. Vuelva a intentarlo más tarde.</string>
+    <string name="mensaje_error">Se ha producido un error.</string>
     <string name="mensaje_cerrar_app">¿Desea salir de la aplicación?</string>
 
 </resources>

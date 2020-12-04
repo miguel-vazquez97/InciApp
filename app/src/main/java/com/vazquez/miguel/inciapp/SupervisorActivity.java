@@ -37,7 +37,10 @@ public class SupervisorActivity extends AppCompatActivity {
         boton_validarArreglo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getApplication(), ListadoIncidencias.class);
+                intent.putExtra("tipo_incidencia", "incidencias_validarArreglo");
+                intent.putExtra("tipo_usuario", tipoUsuario);
+                startActivity(intent);
             }
         });
     }

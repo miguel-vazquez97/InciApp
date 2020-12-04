@@ -1,9 +1,7 @@
 package com.vazquez.miguel.inciapp;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -23,9 +20,8 @@ import java.net.Socket;
 public class SelectRol extends AppCompatActivity {
 
     protected MyApplication app;
-    private Socket socket;
-    protected InputStream recibirServidor;
-    protected OutputStream enviarServidor;
+    protected int tipoUsuario;
+    protected boolean cerrarApp=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +33,7 @@ public class SelectRol extends AppCompatActivity {
         app = (MyApplication)getApplication();
 
         Bundle datos = this.getIntent().getExtras();
-        int recuperamos_tipoUsuario = datos.getInt("tipo_usuario");
+        tipoUsuario = datos.getInt("tipo_usuario");
 
         Button boton_ciudadano = findViewById(R.id.boton_ciudadano);
         boton_ciudadano.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +41,7 @@ public class SelectRol extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CiudadanoActivity.class);
                 intent.putExtra("tipo_usuario", 4);
+                intent.putExtra("rolUnico",false);
                 startActivity(intent);
             }
         });
@@ -70,10 +67,10 @@ public class SelectRol extends AppCompatActivity {
             }
         });
 
-        if(recuperamos_tipoUsuario == 2){
+        if(tipoUsuario == 2){
             boton_supervisor.setVisibility(View.VISIBLE);
             boton_empleado.setVisibility(View.GONE);
-        }else if(recuperamos_tipoUsuario == 3){
+        }else if(tipoUsuario == 3){
             boton_supervisor.setVisibility(View.GONE);
             boton_empleado.setVisibility(View.VISIBLE);
         }
@@ -82,15 +79,22 @@ public class SelectRol extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_log_out, menu);
+        getMenuInflater().inflate(R.menu.menu_setting, menu);
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item){
 
-        if (item.getItemId() == R.id.action_settings_logOut) {
-            LogOutTask logOutTask = new LogOutTask();
-            logOutTask.execute();
+        switch(item.getItemId()){
+            case R.id.action_settings_logOut:
+                LogOutTask logOutTask = new LogOutTask();
+                logOutTask.execute();
+                break;
+            case R.id.action_settings_modificarUser:
+                Intent intent = new Intent(getApplication(), ModificarUsuario.class);
+                intent.putExtra("tipo_usuario", tipoUsuario);
+                startActivity(intent);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -103,13 +107,11 @@ public class SelectRol extends AppCompatActivity {
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("EXIT", true);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+                cerrarApp=true;
+                LogOutTask logOutTask = new LogOutTask();
+                logOutTask.execute();
+                finishAffinity();
+                System.exit(0);
             }
         });
 
@@ -127,52 +129,20 @@ public class SelectRol extends AppCompatActivity {
     }
 
     class LogOutTask extends AsyncTask<String, Void, Boolean> {
-
-        String envioServidor;
-        String respuestaServidor;
-        String[] resServidor;
         boolean respuesta;
 
         @Override
         protected void onPreExecute(){
-            super.onPreExecute();
-            respuesta = false;
-            socket = app.getSocket();
-            try {
-                recibirServidor = socket.getInputStream();
-                enviarServidor = socket.getOutputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
         }
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            envioServidor = "65||logOutUsuario||";
-
-            try{
-                byte[] envioSer = envioServidor.getBytes();
-                //enviarServidor.println(envioServidor);
-                enviarServidor.write(envioSer);
-                enviarServidor.flush();
-                //respuestaServidor = leerServidor.readLine();
-                byte[] respuestaSer = new byte[1024];
-                recibirServidor.read(respuestaSer);
-                respuestaServidor = new String(respuestaSer);
-                resServidor = respuestaServidor.split("\\|\\|");
-
-                if((resServidor[0].equals("70") && resServidor[1].equals("logOutOk"))
-                        || (resServidor[0].equals("71") && resServidor[1].equals("salirAppOk"))){
-                    respuesta = true;
-                }
-
-            } catch (IOException e){
-                e.printStackTrace();
-            }
+            respuesta = app.logOut();
+            //si es false y no estamos ya conectado al servidor significa que nuestra sesion ha caducado
+            if(!respuesta && !app.getConectadoServidor())
+                cancel(true);
 
             return respuesta;
-
         }
 
         @Override
@@ -182,13 +152,24 @@ public class SelectRol extends AppCompatActivity {
                 Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
                 app.setCorreo(null);
 
-                SharedPreferences preferences = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("sesion.iniciada","false");
-                editor.apply();
-
-                finish();
+                if(!cerrarApp){
+                    Intent intent = new Intent(SelectRol.this, MainActivity.class);
+                    //borramos la pila de activity anteriores
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            app.setCorreo(null);
+            Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(SelectRol.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 }

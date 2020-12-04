@@ -62,6 +62,8 @@ public class SupervisorIncidencia extends AppCompatActivity {
 
         if(tipoEstado.equals("enTramite")){
             getSupportActionBar().setTitle(getResources().getString(R.string.EnTramite));
+        }else{
+            getSupportActionBar().setTitle(getResources().getString(R.string.ValidarArreglo));
         }
 
         app = (MyApplication) getApplication();
@@ -100,11 +102,10 @@ public class SupervisorIncidencia extends AppCompatActivity {
         ProgressBar progressBar;
         AlertDialog dialog;
         String envioServidor;
-        byte[] envioSer;
+        byte[] envioSer, respuestaSer;
 
         @Override
         protected void onPreExecute(){
-            super.onPreExecute();
             progressBar = findViewById(R.id.progressbar_sup_inci);
         }
 
@@ -114,6 +115,10 @@ public class SupervisorIncidencia extends AppCompatActivity {
             IncidenciaDetalle incidenciaDetalle = null;
 
             try {
+                while(leerServidor.available()>0){
+                    leerServidor.read(respuestaSer = new byte[leerServidor.available()]);
+                }
+
                 envioSer = envioServidor.getBytes();
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
@@ -121,7 +126,19 @@ public class SupervisorIncidencia extends AppCompatActivity {
                 //tamano que tendra nuestra cadena en base64
                 int size = inputStream.readInt();
 
-                while(inputStream.available()<1){}
+                int time=0;
+                while(leerServidor.available()<1 && time<4000){
+                    try {
+                        Thread.sleep(500);
+                        time += 500;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(time==4000){
+                    return null;
+                }
 
                 byte[] arrayBytesBase64;
                 String base64="", cadena;
@@ -148,7 +165,7 @@ public class SupervisorIncidencia extends AppCompatActivity {
 
                 String imagenBase64;
                 byte[] byteArray;
-                Bitmap bmpImage;
+                Bitmap bmpImage, bmpImageArreglo;
                 if(!jsonObject.getString("imagen").isEmpty()){
                     imagenBase64 = jsonObject.getString("imagen");
                     byteArray = Base64.decode(imagenBase64, Base64.DEFAULT);
@@ -157,10 +174,24 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     bmpImage = null;
                 }
 
-                incidenciaDetalle = new IncidenciaDetalle(jsonObject.getString("estado"), jsonObject.getString("ubicacion"), jsonObject.getString("direccion"), jsonObject.getString("descripcion"), jsonObject.getString("tipo"), localDate, jsonObject.getString("descripcionEstadoIncidencia"), bmpImage);
+                if(tipoEstado.equals("enTramite")) {
+                    incidenciaDetalle = new IncidenciaDetalle(jsonObject.getString("estado"), jsonObject.getString("ubicacion"), jsonObject.getString("direccion"), jsonObject.getString("descripcion"), jsonObject.getString("tipo"), localDate, bmpImage);
+                }else{
+                    if(!jsonObject.getString("imagenArreglo").isEmpty()){
+                        imagenBase64 = jsonObject.getString("imagenArreglo");
+                        byteArray = Base64.decode(imagenBase64, Base64.DEFAULT);
+                        bmpImageArreglo = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    }else{
+                        bmpImageArreglo = null;
+                    }
+                    incidenciaDetalle = new IncidenciaDetalle(jsonObject.getString("estado"), jsonObject.getString("ubicacion"), jsonObject.getString("direccion"), jsonObject.getString("descripcion"), jsonObject.getString("tipo"), localDate, bmpImage, jsonObject.getString("descripcionArreglo"), jsonObject.getString("fechaArreglo"), bmpImageArreglo);
+                }
 
-            } catch (JSONException | IOException ex) {
+            } catch (IOException ex) {
+                cancel(true);
                 ex.printStackTrace();
+            }catch(JSONException jsonex){
+                jsonex.printStackTrace();
             }
 
             return incidenciaDetalle;
@@ -169,6 +200,11 @@ public class SupervisorIncidencia extends AppCompatActivity {
         @Override
         protected void onPostExecute(IncidenciaDetalle incidenciaDetalle) {
             progressBar.setVisibility(View.GONE);
+
+            if(incidenciaDetalle==null){
+                Toast.makeText(getApplication(), getApplication().getString(R.string.mensaje_error_conection_server), Toast.LENGTH_LONG).show();
+                return;
+            }
 
             String[] lon_lat = incidenciaDetalle.getUbicacion().split(";");
             latitud = Double.parseDouble(lon_lat[0]);
@@ -180,14 +216,27 @@ public class SupervisorIncidencia extends AppCompatActivity {
             textViewFecha.setText(incidenciaDetalle.getDate().toString());
 
             TextView textViewDescripcion = findViewById(R.id.sup_inci_descripcion);
-            if(tipoEstado.equals("enTramite")) {
-                textViewDescripcion.setText(incidenciaDetalle.getDescripcion());
-            }
+            textViewDescripcion.setText(incidenciaDetalle.getDescripcion());
 
             ImageView imageView = findViewById(R.id.sup_inci_imagen);
             imageView.setImageBitmap(incidenciaDetalle.getImage());
             TextView textViewUbicacion = findViewById(R.id.sup_inci_ubicacion);
             textViewUbicacion.setText(incidenciaDetalle.getDireccion());
+
+            if(!tipoEstado.equals("enTramite")){
+                TextView textViewDetallesArreglo = findViewById(R.id.sup_inci_descripcion_arreglo);
+                textViewDetallesArreglo.setText(incidenciaDetalle.getDescripcionArreglo());
+                TextView textViewFechaArreglo = findViewById(R.id.sup_inci_fecha_arreglo);
+                textViewFechaArreglo.setText(incidenciaDetalle.getFechaArreglo());
+                ImageView imageViewArreglo = findViewById(R.id.sup_inci_imagen_arreglo);
+                imageViewArreglo.setImageBitmap(incidenciaDetalle.getImageArreglo());
+
+                View separador = findViewById(R.id.separadorArreglo);
+                separador.setVisibility(View.VISIBLE);
+                textViewFechaArreglo.setVisibility(View.VISIBLE);
+                textViewDetallesArreglo.setVisibility(View.VISIBLE);
+                imageViewArreglo.setVisibility(View.VISIBLE);
+            }
 
             botonUbicacion.setVisibility(View.VISIBLE);
             botonValidar.setVisibility(View.VISIBLE);
@@ -198,7 +247,10 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     opcion = "validar";
                     if(tipoEstado.equals("enTramite")) {
                         builder.setMessage(getResources().getString(R.string.validar_incidencia));
+                    }else {
+                        builder.setMessage(getResources().getString(R.string.validar_arreglo_incidencia));
                     }
+
                     builder.setPositiveButton("Si", new DialogInterface.OnClickListener(){
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -226,7 +278,10 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(SupervisorIncidencia.this);
                     if(tipoEstado.equals("enTramite")){
                         builder.setMessage(getResources().getString(R.string.denegar_incidencia));
+                    }else {
+                        builder.setMessage(getResources().getString(R.string.denegar_arreglo_incidencia));
                     }
+
                     builder.setPositiveButton("Si", new DialogInterface.OnClickListener(){
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -244,6 +299,16 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     dialog.show();
                 }
             });
+        }
+
+        @Override
+        protected void onCancelled() {
+            app.setCorreo(null);
+            Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(SupervisorIncidencia.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -303,7 +368,6 @@ public class SupervisorIncidencia extends AppCompatActivity {
 
         @Override
         protected void onPreExecute(){
-            super.onPreExecute();
             builder = new AlertDialog.Builder(SupervisorIncidencia.this);
 
             builder.setTitle("Enviando...");
@@ -323,6 +387,8 @@ public class SupervisorIncidencia extends AppCompatActivity {
 
             if(tipoEstado.equals("enTramite")){
                 envioServidor = "62||" + id_incidencia + "||";
+            }else{
+                envioServidor = "63||" + id_incidencia + "||";
             }
 
             if(opcion.equals("validar")){
@@ -332,18 +398,35 @@ public class SupervisorIncidencia extends AppCompatActivity {
             }
 
             try {
+                while(leerServidor.available()>0){
+                    leerServidor.read(respuestaSer = new byte[leerServidor.available()]);
+                }
+
                 envioSer = envioServidor.getBytes();
                 enviarServidor.write(envioSer);
                 enviarServidor.flush();
 
-                respuestaSer = new byte[1024];
+                int time=0;
+                while(leerServidor.available()<1 && time<4000){
+                    try {
+                        Thread.sleep(500);
+                        time += 500;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(time==4000){
+                    return null;
+                }
+
+                respuestaSer = new byte[inputStream.available()];
                 leerServidor.read(respuestaSer);
                 respuestaServidor = new String(respuestaSer);
                 resServidor = respuestaServidor.split("\\|\\|");
 
-
-
             } catch (IOException ex) {
+                cancel(true);
                 ex.printStackTrace();
             }
 
@@ -354,8 +437,17 @@ public class SupervisorIncidencia extends AppCompatActivity {
         protected void onPostExecute(String[] respuesta) {
             progressDialog.dismiss();
 
+            if(respuesta==null){
+                Toast.makeText(getApplication(), getApplication().getString(R.string.mensaje_error_conection_server), Toast.LENGTH_LONG).show();
+                return;
+            }
+
             Intent intent = new Intent(getApplication(), ListadoIncidencias.class);
-            intent.putExtra("tipo_incidencia", "incidencias_enTramite");
+            if(tipoEstado.equals("enTramite")) {
+                intent.putExtra("tipo_incidencia", "incidencias_enTramite");
+            }else{
+                intent.putExtra("tipo_incidencia", "incidencias_validarArreglo");
+            }
             intent.putExtra("tipo_usuario", tipoUsuario);
 
             switch(respuesta[1]){
@@ -371,11 +463,33 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     finish();
                     break;
 
+                case "opcionValidarArregloIncidenciaValidada":
+                    Toast.makeText(getApplication(),getResources().getString(R.string.validar_arreglo_incidencia_ok),Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    finish();
+                    break;
+
+                case "opcionValidarArregloIncidenciaDenegada":
+                    Toast.makeText(getApplication(),getResources().getString(R.string.denegar_arreglo_incidencia_ok),Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    finish();
+                    break;
+
                 default:
                     Toast.makeText(getApplication(),getResources().getString(R.string.mensaje_error),Toast.LENGTH_LONG).show();
                     break;
             }
 
+        }
+
+        @Override
+        protected void onCancelled() {
+            app.setCorreo(null);
+            Toast.makeText(getApplication(), getApplication().getString(R.string.logout_mensaje), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(SupervisorIncidencia.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 
