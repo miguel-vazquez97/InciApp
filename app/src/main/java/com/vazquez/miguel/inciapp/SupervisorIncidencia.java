@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,9 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.time.LocalDate;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class SupervisorIncidencia extends AppCompatActivity {
 
@@ -127,7 +125,7 @@ public class SupervisorIncidencia extends AppCompatActivity {
                 int size = inputStream.readInt();
 
                 int time=0;
-                while(leerServidor.available()<1 && time<4000){
+                while(leerServidor.available()<1 && time<10000){
                     try {
                         Thread.sleep(500);
                         time += 500;
@@ -136,7 +134,7 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     }
                 }
 
-                if(time==4000){
+                if(time==10000){
                     return null;
                 }
 
@@ -407,7 +405,7 @@ public class SupervisorIncidencia extends AppCompatActivity {
                 enviarServidor.flush();
 
                 int time=0;
-                while(leerServidor.available()<1 && time<4000){
+                while(leerServidor.available()<1 && time<10000){
                     try {
                         Thread.sleep(500);
                         time += 500;
@@ -416,7 +414,7 @@ public class SupervisorIncidencia extends AppCompatActivity {
                     }
                 }
 
-                if(time==4000){
+                if(time==10000){
                     return null;
                 }
 

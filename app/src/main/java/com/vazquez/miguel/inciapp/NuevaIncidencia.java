@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,8 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -44,12 +40,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
 
@@ -358,7 +352,7 @@ public class NuevaIncidencia extends AppCompatActivity {
                 while(true){
                     int time=0;
                     //esperamos a recibir la comunicación con el server
-                    while(leerServidor.available()<1 && time<4000){
+                    while(leerServidor.available()<1 && time<10000){
                         try {
                             Thread.sleep(500);
                             time += 500;
@@ -366,7 +360,7 @@ public class NuevaIncidencia extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    if(time==4000){
+                    if(time==10000){
                         return null;
                     }
                     //leeremos lo que nos haya enviado el server
@@ -389,7 +383,7 @@ public class NuevaIncidencia extends AppCompatActivity {
                         //si todo ha ido correctamente a la hora de enviar los datos o ha habido algún error
                         //saldremos del switch y del while para informar al usuario
                         default:
-                            return null;
+                            return true;
                     }
 
                 }
@@ -403,7 +397,7 @@ public class NuevaIncidencia extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            return null;
+            return true;
 
         }
 

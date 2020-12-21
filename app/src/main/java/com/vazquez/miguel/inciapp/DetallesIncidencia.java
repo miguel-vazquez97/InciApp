@@ -116,7 +116,7 @@ public class DetallesIncidencia extends AppCompatActivity {
                 int size = inputStream.readInt();
 
                 int time=0;
-                while(leerServidor.available()<1 && time<4000){
+                while(leerServidor.available()<1 && time<10000){
                     try {
                         Thread.sleep(500);
                         time += 500;
@@ -125,7 +125,7 @@ public class DetallesIncidencia extends AppCompatActivity {
                     }
                 }
 
-                if(time==4000){
+                if(time==10000){
                     return null;
                 }
 

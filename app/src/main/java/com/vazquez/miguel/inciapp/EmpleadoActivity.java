@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +34,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -215,7 +213,7 @@ public class EmpleadoActivity extends AppCompatActivity {
                 int size = inputStream.readInt();
 
                 int time=0;
-                while(leerServidor.available()<1 && time<4000){
+                while(leerServidor.available()<1 && time<10000){
                     try {
                         Thread.sleep(500);
                         time += 500;
@@ -224,7 +222,7 @@ public class EmpleadoActivity extends AppCompatActivity {
                     }
                 }
 
-                if(time==4000){
+                if(time==10000){
                     return null;
                 }
 

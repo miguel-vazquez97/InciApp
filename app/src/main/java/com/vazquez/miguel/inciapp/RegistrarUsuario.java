@@ -10,13 +10,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class RegistrarUsuario extends AppCompatActivity {
 
@@ -221,7 +220,7 @@ public class RegistrarUsuario extends AppCompatActivity {
                 enviarServidor.flush();
 
                 int time=0;
-                while(leerServidor.available()<1 && time<4000){
+                while(leerServidor.available()<1 && time<10000){
                     try {
                         Thread.sleep(500);
                         time += 500;
@@ -230,7 +229,7 @@ public class RegistrarUsuario extends AppCompatActivity {
                     }
                 }
 
-                if(time==4000){
+                if(time==10000){
                     return null;
                 }
 
